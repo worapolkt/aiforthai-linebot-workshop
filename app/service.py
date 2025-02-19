@@ -10,15 +10,16 @@ from aift.image.classification import maskdetection
 
 from datetime import datetime
 
+from app.configs import Configs
+
 router = APIRouter(tags=[""])
 
-AIFORTHAI_APIKEY = ""
-LINE_CHANNEL_ACCESS_TOKEN = ""
-LINE_CHANNEL_SECRET = ""
+cfg = Configs()
 
-setting.set_api_key(AIFORTHAI_APIKEY)
-line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)  # CHANNEL_ACCESS_TOKEN
-handler = WebhookHandler(LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
+
+setting.set_api_key(cfg.AIFORTHAI_APIKEY)
+line_bot_api = LineBotApi(cfg.LINE_CHANNEL_ACCESS_TOKEN)  # CHANNEL_ACCESS_TOKEN
+handler = WebhookHandler(cfg.LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
 
 
 @router.post("/message")
@@ -47,7 +48,7 @@ def handle_text_message(event):
 
     # aiforthai multimodal chat
     text = textqa.chat(
-        event.message.text, result + AIFORTHAI_APIKEY, temperature=0.6, context=""
+        event.message.text, result + cfg.AIFORTHAI_APIKEY, temperature=0.6, context=""
     )["response"]
 
     # return text response
