@@ -2,28 +2,26 @@ from fastapi import APIRouter, Request
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 from aift import setting
 from aift.multimodal import textqa
-from aift.image.classification import maskdetection
 
 from datetime import datetime
 
 from app.configs import Configs
 
-router = APIRouter(tags=[""])
+router = APIRouter(tags=["Main"], prefix="/message")
 
 cfg = Configs()
 
-
-setting.set_api_key(cfg.AIFORTHAI_APIKEY)
+setting.set_api_key(cfg.AIFORTHAI_APIKEY) # AIFORTHAI_APIKEY
 line_bot_api = LineBotApi(cfg.LINE_CHANNEL_ACCESS_TOKEN)  # CHANNEL_ACCESS_TOKEN
 handler = WebhookHandler(cfg.LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
 
 
-@router.post("/message")
-async def hello_word(request: Request):
+@router.post("")
+async def message_qa(request: Request):
     signature = request.headers["X-Line-Signature"]
     body = await request.body()
     try:
@@ -53,24 +51,6 @@ def handle_text_message(event):
 
     # return text response
     send_message(event, text)
-
-
-@handler.add(MessageEvent, message=ImageMessage)
-def handle_image_message(event):
-    message_id = event.message.id
-    image_content = line_bot_api.get_message_content(message_id)
-
-    # Save the image locally and process it
-    with open("image.jpg", "wb") as f:
-        for chunk in image_content.iter_content():
-            f.write(chunk)
-
-    # aiforthai maskdetection
-    result = maskdetection.analyze("image.jpg", return_json=False)
-    result = result[0]["result"]
-
-    # return text response
-    send_message(event, result)
 
 
 def echo(event):

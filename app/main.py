@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import app.service as service
+from  app import service_main # main service router
 
 app = FastAPI(
     title="aiforthai-line-chatbot",
@@ -16,7 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(service.router)
+
+app.include_router(service_main.router)
 
 
 @app.get("/")
