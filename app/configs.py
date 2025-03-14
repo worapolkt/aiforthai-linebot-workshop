@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Configs(BaseSettings):
@@ -6,5 +6,4 @@ class Configs(BaseSettings):
     LINE_CHANNEL_ACCESS_TOKEN: str
     LINE_CHANNEL_SECRET: str
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore",str_strip_whitespace=True)
