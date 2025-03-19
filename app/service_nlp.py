@@ -223,7 +223,7 @@ def get_wav_duration_in_ms(file_path):
 
 # Function call Vaja9
 def callVaja9(text, speaker):
-    url = 'https://api.aiforthai.in.th/vaja9/synth_audiovisual'
+    url = cfg.URL_VAJA
 
     headers = {'Apikey':cfg.AIFORTHAI_APIKEY,"Content-Type": "application/json"}
     data = {'input_text':text,'speaker': speaker}
@@ -253,7 +253,7 @@ def get_wav_duration_in_ms(file_path):
 
 # Function for call Partii
 def callPartii(file):
-    url = "https://api.aiforthai.in.th/partii-webapi"
+    url = cfg.URL_PARTII
 
     files = {'wavfile': (file, open(file, 'rb'), 'audio/wav')}
 

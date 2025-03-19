@@ -10,5 +10,7 @@ class Configs(BaseSettings):
     URL: str
     WAV_FILE: str
     DIR_FILE: str
+    URL_PARTII: str
+    URL_VAJA: str
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore",str_strip_whitespace=True)
