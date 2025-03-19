@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage, AudioSendMessage,AudioMessage
 
 from aift import setting
 from aift.multimodal import textqa
@@ -225,16 +225,16 @@ def get_wav_duration_in_ms(file_path):
 def callVaja9(text, speaker):
     url = 'https://api.aiforthai.in.th/vaja9/synth_audiovisual'
 
-    headers = {'Apikey':AIFORTHAI_APIKEY,"Content-Type": "application/json"}
+    headers = {'Apikey':cfg.AIFORTHAI_APIKEY,"Content-Type": "application/json"}
     data = {'input_text':text,'speaker': speaker}
     response = requests.post(url, json=data, headers=headers)
     return response
 
 # Function for download audio file
 def download_and_play(sWav_url):
-    file_name = DIR_FILE+WAV_FILE
+    file_name = cfg.DIR_FILE+cfg.WAV_FILE
     with open(file_name, 'wb') as a:
-        resp = requests.get(sWav_url,headers={'Apikey':AIFORTHAI_APIKEY})
+        resp = requests.get(sWav_url,headers={'Apikey':cfg.AIFORTHAI_APIKEY})
         # print(resp.status_code)
         if resp.status_code == 200:
             a.write(resp.content)
@@ -258,7 +258,7 @@ def callPartii(file):
     files = {'wavfile': (file, open(file, 'rb'), 'audio/wav')}
 
     headers = {
-            'Apikey': AIFORTHAI_APIKEY,
+            'Apikey': cfg.AIFORTHAI_APIKEY,
             'Cache-Control': 'no-cache',
             'Connection': 'keep-alive',
             }
