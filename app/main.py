@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(service_main.router)
+app.include_router(service_nlp.router)
 
 # Serve static files at the /static endpoint
 app.mount("/static/", StaticFiles(directory="static"), name="static")
