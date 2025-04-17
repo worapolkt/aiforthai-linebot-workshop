@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from  app import service_main # main service router
+from app import service_nlp # NLP service router
 from fastapi.staticfiles import StaticFiles # For Vaja9
 
 app = FastAPI(
