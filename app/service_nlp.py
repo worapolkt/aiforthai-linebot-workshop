@@ -157,24 +157,26 @@ def handle_text_message(event):
     # text = zh_alignment.analyze(content[0], content[1])
 
     #11. send text message to response
-    send_message(event,str(text)) # หากทำข้อการส่งข้อความข้อ 1-11 ให้เปิดใช้งานการส่งข้อความตอบกลับทาง Line
+    # send_message(event,str(text)) # หากทำข้อการส่งข้อความข้อ 1-11 ให้เปิดใช้งานการส่งข้อความตอบกลับทาง Line
 
     # #12. Vaja TTS (ก่อนเรียกใช้ Vaja ให้ปิดข้อ 11. และเปิดข้อ 13.ให้เรียบร้อยก่อน)
     # #12.1 Vaja9 case เรียกใช้ผ่าน PIP package (ไม่สามารถกำหนดเสียงได้ จะได้เสียงเป็นผู้ชาย)
     
-    # tts.convert(event.message.text, DIR_FILE+WAV_FILE, speaker=0) #[0=เสียงผู้ชาย, 1=เสียงผู้หญิง, 2=เด็กผู้ชาย, 3=เด็กผู้หญิง]
-    # audio_url = URL+DIR_FILE+WAV_FILE
-    # audio_duration = get_wav_duration_in_ms(DIR_FILE+WAV_FILE)
+    tts.convert(event.message.text, cfg.DIR_FILE+cfg.WAV_FILE, speaker=0) #[0=เสียงผู้ชาย, 1=เสียงผู้หญิง, 2=เด็กผู้ชาย, 3=เด็กผู้หญิง]
+    audio_url = cfg.URL+cfg.DIR_FILE+cfg.WAV_FILE
+    audio_duration = get_wav_duration_in_ms(cfg.DIR_FILE+cfg.WAV_FILE)
 
-    # audio_message = AudioSendMessage(
-    #         original_content_url=audio_url,
-    #         duration=audio_duration
-    #     )
+    audio_message = AudioSendMessage(
+            original_content_url=audio_url,
+            duration=audio_duration
+        )
     
 
     # # 12.2 Vaja9 case เรียกใช้งานผ่านฟังก์ชันที่เขียนขึ้นมา สามารถกำหนดเสียงได้ 
     # speaker = 0 #[0=เสียงผู้ชาย, 1=เสียงผู้หญิง, 2=เด็กผู้ชาย, 3=เด็กผู้หญิง]
     # response = callVaja9(event.message.text, speaker)
+    # print("response")
+    # print(response.json())
     
     # if(response.json()['msg'] == 'success'):
         
@@ -182,7 +184,7 @@ def handle_text_message(event):
     #     download_and_play(response.json()['wav_url'])
 
     #     # Path to the audio file you want to send
-    #     audio_url = URL+DIR_FILE+WAV_FILE
+    #     audio_url = cfg.URL+cfg.DIR_FILE+cfg.WAV_FILE
     #     print(audio_url)
     #     audio_durations = int(response.json()['durations']*1000)  # Duration in milliseconds (e.g., 5000 milliseconds)
     #     print(audio_durations)
@@ -194,7 +196,7 @@ def handle_text_message(event):
     #     )
 
     # #13. return audio message response
-    # send_audio_message(event,audio_message)  
+    send_audio_message(event,audio_message)  
 
 
 
