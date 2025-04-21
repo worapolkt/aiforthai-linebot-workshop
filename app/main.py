@@ -1,8 +1,13 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from  app import service_main # main service router
-from app import service_nlp # NLP service router
-from fastapi.staticfiles import StaticFiles # For Vaja9
+from fastapi.staticfiles import StaticFiles  # For Vaja9
+
+from app import (
+    service_main,  # main service router
+    service_nlp,  # NLP service router
+)
 
 app = FastAPI(
     title="aiforthai-line-chatbot",
@@ -23,6 +28,8 @@ app.include_router(service_main.router)
 app.include_router(service_nlp.router)
 
 # Save static files at the /static endpoint
+if not os.path.exists("static"):
+    os.makedirs("static")
 app.mount("/static/", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
