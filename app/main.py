@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from  app import service_main # main service router
+from app import service_nlp # NLP service router
 from fastapi.staticfiles import StaticFiles # For Vaja9
 
 app = FastAPI(
@@ -19,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(service_main.router)
+app.include_router(service_nlp.router)
 
 # Serve static files at the /static endpoint
 app.mount("/static/", StaticFiles(directory="static"), name="static")
