@@ -33,6 +33,7 @@ from aift.speech import tts
 
 # For Partii STT
 import io
+import re
 import json
 import requests
 
@@ -115,16 +116,30 @@ def handle_text_message(event):
             send_message(event, str(result))
         
         elif matched_command == "#soundex":
-            result = soundex.analyze(content, model='personname')['words'] # model = personname, royin
-            send_message(event, str(result))
+            matched = re.match(r"#soundex(?:_([a-zA-Z0-9]+))?(.*)", user_input)
+            if matched:
+                model = matched.group(1) if matched.group(1) else "personname"  # Default model, model = personname, royin
+                content = matched.group(2).strip()
 
-        elif matched_command == "#thaiwordsim":
-            result = similarity.similarity(content, engine='thaiwordsim', model='thwiki') # model = thwiki, twitter
-            send_message(event, str(result))
+                result = soundex.analyze(content, model=model)['words']
+                send_message(event, str(result))
+
+        elif matched_command.startswith("#thaiwordsim"):
+            matched = re.match(r"#thaiwordsim(?:_([a-zA-Z0-9]+))?(.*)", user_input)
+            if matched:
+                model = matched.group(1) if matched.group(1) else "thwiki"
+                content = matched.group(2).strip()
+                result = similarity.similarity(content, engine='thaiwordsim', model=model)
+                send_message(event, str(result))         
 
         elif matched_command == "#wordapprox":
-            result = similarity.similarity(content, engine='wordapprox', model='food', return_json=True) # model = personname, royin, food
-            send_message(event, str(result))
+            matched = re.match(r"#wordapprox(?:_([a-zA-Z0-9]+))?(.*)", user_input)
+            if matched:
+                model = matched.group(1) if matched.group(1) else "personname"  # default to personname,  model = personname, royin, food
+                content = matched.group(2).strip()
+
+                result = similarity.similarity(content, engine='wordapprox', model=model, return_json=True)
+                send_message(event, str(result))
 
         elif matched_command == "#textclean":
             result = text_cleansing.clean(content)
