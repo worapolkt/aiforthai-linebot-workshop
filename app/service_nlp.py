@@ -303,7 +303,7 @@ def callPartii(file):
     data = json.loads(response.text)
     return data['message']
 
-# Function call Chaines to Thai
+# Function call Chinese to Thai/ Thai to Chinese
 def Chainess2Thai(text, src, tar):
     url = "https://api.aiforthai.in.th/xiaofan-zh-th"
  
@@ -318,6 +318,7 @@ def Chainess2Thai(text, src, tar):
     # print(response.json())
     return response.json()['output']
 
+# Function call English to Thai/ Thai to English
 def translate_xiaofan(text, direction):
     # direction = 'en2th' or 'th2en'
     url = f"https://api.aiforthai.in.th/xiaofan-en-th/{direction}"
