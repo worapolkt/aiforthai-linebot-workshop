@@ -150,20 +150,24 @@ def handle_text_message(event):
             send_message(event, str(result))
         
         elif matched_command == "#mtch2th":
-            result = zh2th.translate(content, return_json=True)
-            send_message(event, result)
+            # result = zh2th.translate(content, return_json=True)
+            result = Chainess2Thai(content, "zh", "th")
+            send_message(event, str(result))
 
         elif matched_command == "#mtth2ch":
-            result = th2zh.translate(content, return_json=True)
-            send_message(event, result)
+            # result = th2zh.translate(content, return_json=True)
+            result = Chainess2Thai(content, "th", "zh")
+            send_message(event, str(result))
 
         elif matched_command == "#mten2th":
-            result = en2th.translate(content)
-            send_message(event, result)
+            # result = en2th.translate(content)
+            result = translate_xiaofan(content, "en2th")
+            send_message(event, str(result))
 
         elif matched_command == "#mtth2en":
-            result = th2en.translate(content)
-            send_message(event, result)
+            # result = th2en.translate(content)
+            result = translate_xiaofan(content, "th2en")
+            send_message(event, str(result))
 
         elif matched_command == "#ssense":
             result = sentiment.analyze(content, engine='ssense')
@@ -299,7 +303,37 @@ def callPartii(file):
     data = json.loads(response.text)
     return data['message']
 
+# Function call Chaines to Thai
+def Chainess2Thai(text, src, tar):
+    url = "https://api.aiforthai.in.th/xiaofan-zh-th"
+ 
+    payload = json.dumps({
+    "input": text,
+    "src": src,
+    "trg": tar
+    })
+    headers = {'apikey': cfg.AIFORTHAI_APIKEY,'Content-Type': 'application/json'}
+    
+    response = requests.request("POST", url, headers=headers, data=payload)
+    # print(response.json())
+    return response.json()['output']
 
+def translate_xiaofan(text, direction):
+    # direction = 'en2th' or 'th2en'
+    url = f"https://api.aiforthai.in.th/xiaofan-en-th/{direction}"
 
+    # Payload key changes based on direction
+    if direction in ["en2th", "th2en"]:
+        payload = json.dumps({"text": text})
+    else:
+        raise ValueError("Invalid direction. Use 'en2th' or 'th2en'.")
+
+    headers = {
+        'apikey': cfg.AIFORTHAI_APIKEY,
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.post(url, headers=headers, data=payload)
+    return response.json()['translated_text']  # or response.text if you prefer raw
 
 # End of  file
