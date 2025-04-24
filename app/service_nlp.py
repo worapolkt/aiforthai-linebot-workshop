@@ -77,131 +77,142 @@ def handle_voice_message(event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    text = ''
-    # # อันดับแรกต้องเปิดทำการส่งข้อความใน ข้อ 11. หากใช้ Vaja ให้ปิดในข้อ 11.
+    user_input = event.message.text.strip()
+    command_list = [
+        "#trexplus","#lexto", "#trex++", "#tner","#g2p", "#soundex","#thaiwordsim", "#wordapprox", 
+        "#textclean", "#tagsuggest", "#mtch2th", "#mtth2ch", "#mten2th", "#mtth2en", "#ssense", "#emonews",
+        "#thaimoji", "#cyberbully", "#longan_sentence", "#longan_tagger", "#longan_tokentag", "#longan_tokenizer",
+        "#en2th_aligner", "#ch2th_aligner","#tts"
+    ]
 
-    # #1. Tokeninzer
-    #TLex+, Lexto+
-    # text = tokenizer.tokenize(event.message.text, engine='trexplus', return_json=True) # TLex+
-    # text = tokenizer.tokenize(event.message.text, engine='lexto', return_json=True) # Lexto+
+    matched_command = None
+    for cmd in command_list:
+        if user_input.startswith(cmd):
+            matched_command = cmd
+            break
 
-    # #TLex++
-    # res = tokenizer.tokenize(event.message.text, engine='trexplusplus', return_json=True)
-    # text = list(zip(res['words'],res['tags']))
+    if matched_command:
+        content = user_input[len(matched_command):].strip()
 
+        if matched_command == "#trexplus":
+            result = tokenizer.tokenize(content, engine='trexplus', return_json=True)
+            send_message(event, str(result))
 
-    # #TNER
-    # res = ner.analyze(event.message.text, return_json=True)
-    # text = list(zip(res['words'], res['POS'], res['tags']))
-   
-
-    # #2. G2P
-    # text = g2p.analyze(event.message.text)['output']['result']
-
-    # #3. Soundex
-    # text = soundex.analyze(event.message.text, model='personname')['words'] # model = personname, royin
-  
-    # #4. Word similarity
-    # text = similarity.similarity(event.message.text,engine='thaiwordsim') # engine = thaiwordsim, wordapprox
-    # text = similarity.similarity(event.message.text, engine='thaiwordsim', model='thwiki') # model = thwiki, twitter
-    # text = similarity.similarity(event.message.text, engine='wordapprox', model='food', return_json=True) # model = personname, royin, food
-
-    # #5. Text cleasing
-    # text = text_cleansing.clean(event.message.text)
-
-    # #6. Tag suggestion
-    # text = tag.analyze(event.message.text, numtag=5)
-
-    # #7. Machine Translation
-    # #7.1. Chinese to Thai
-    # #print(event.message.text)
-    # text = zh2th.translate(event.message.text, return_json=True)
-
-    # #7.2. Thai to Chinese
-    # text = th2zh.translate(event.message.text, return_json=True)
-
-    # #7.3. English to Thai
-    # text = en2th.translate(event.message.text)
-
-    # #7.4. Thai to English
-    # text = th2en.translate(event.message.text) #{'translated_text': 'kanchanaburihasalookattheclassofkalasin,a320-bedbuswithapremium.'}
-
-    # #8. Sentiment Analysis
-    # text = sentiment.analyze(event.message.text) # engine = ssense, emonews, thaimoji, cyberbully
-    # text = sentiment.analyze(event.message.text, engine='emonews')
-    # text = sentiment.analyze(event.message.text, engine='thaimoji')
-    # text = sentiment.analyze(event.message.text, engine='cyberbully')
-    
-    # #9. Longan
-    # #9.1. Sentence Token
-    # text = sentence_tokenizer.tokenize(event.message.text)
-
-    # #9.2. Tagger
-    # text = tagger.tag(event.message.text)
-
-    # #9.3. Token Tagger
-    # text = token_tagger.tokenize_tag(event.message.text)
-
-    # #9.4. Tokenizer
-    # text = logan_tokenizer.tokenize(event.message.text)
-
-    # #10. Alignment
-    # content = event.message.text.split('|') # รับข้อความจาก Line ในรูปแบบคู่ภาษาที่ต้องการจับคู่ ด้วยเครื่องหมาย "|" 
-    # # ตัวอย่างภาษาอังกฤษ-ไทย เช่น "I like to recommend my friends to Thai restaurants|ฉันชอบแนะนำเพื่อนไปร้านอาหารไทย"
-    # # ตัวอย่างภาษาจีน-ไทย เช่น "我是10月10日从泰国来的。|ฉันมาจากประเทศไทยเมื่อวันที่ 10 เดือนตุลาคม"
-
-    # #10.1 English-Thai Word Aligner
-    # text = en_alignment.analyze(content[0], content[1], return_json=True)
-
-    # #10.2.  Chinese-Thai Word Aligner
-    # text = zh_alignment.analyze(content[0], content[1])
-
-    #11. send text message to response
-    # send_message(event,str(text)) # หากทำข้อการส่งข้อความข้อ 1-11 ให้เปิดใช้งานการส่งข้อความตอบกลับทาง Line
-
-    # #12. Vaja TTS (ก่อนเรียกใช้ Vaja ให้ปิดข้อ 11. และเปิดข้อ 13.ให้เรียบร้อยก่อน)
-    # #12.1 Vaja9 case เรียกใช้ผ่าน PIP package (ไม่สามารถกำหนดเสียงได้ จะได้เสียงเป็นผู้ชาย)
-    
-    # tts.convert(event.message.text, cfg.DIR_FILE+cfg.WAV_FILE, speaker=0) #[0=เสียงผู้ชาย, 1=เสียงผู้หญิง, 2=เด็กผู้ชาย, 3=เด็กผู้หญิง]
-
-    # audio_url = cfg.WAV_URL+cfg.DIR_FILE+cfg.WAV_FILE
-    # audio_duration = get_wav_duration_in_ms(cfg.DIR_FILE+cfg.WAV_FILE)
-
-
-    # audio_message = AudioSendMessage(
-    #         original_content_url=audio_url,
-    #         duration=audio_duration
-    #     )
-    
-
-    # # 12.2 Vaja9 case เรียกใช้งานผ่านฟังก์ชันที่เขียนขึ้นมา สามารถกำหนดเสียงได้ 
-    # speaker = 0 #[0=เสียงผู้ชาย, 1=เสียงผู้หญิง, 2=เด็กผู้ชาย, 3=เด็กผู้หญิง]
-    # response = callVaja9(event.message.text, speaker)
-    # # print("response")
-    # # print(response.json())
-    
-    # if(response.json()['msg'] == 'success'):
+        elif matched_command == "#lexto":
+            result = tokenizer.tokenize(content, engine='trexplus', return_json=True)
+            send_message(event, str(result))
         
-    #     # Download file and write in .m4a
-    #     download_and_play(response.json()['wav_url'])
+        elif matched_command == "#trex++":
+            result = tokenizer.tokenize(content, engine='trexplusplus', return_json=True)
+            send_message(event, str(list(zip(result['words'], result['tags']))))
+        
+        elif matched_command == "#tner":
+            result = ner.analyze(content, return_json=True)
+            send_message(event, str(list(zip(result['words'], result['POS'], result['tags']))))
+        
+        elif matched_command == "#g2p":
+            result = g2p.analyze(content)['output']['result']
+            send_message(event, str(result))
+        
+        elif matched_command == "#soundex":
+            result = soundex.analyze(content, model='personname')['words'] # model = personname, royin
+            send_message(event, str(result))
 
-    #     # Path to the audio file you want to send
-    #     audio_url = cfg.WAV_URL+cfg.DIR_FILE+cfg.WAV_FILE
-    #     # print(audio_url)
-    #     audio_durations = int(response.json()['durations']*1000)  # Duration in milliseconds (e.g., 5000 milliseconds)
-    #     # print(audio_durations)
+        elif matched_command == "#thaiwordsim":
+            result = similarity.similarity(content, engine='thaiwordsim', model='thwiki') # model = thwiki, twitter
+            send_message(event, str(result))
 
-    #     # Create an AudioSendMessage instance
-    #     audio_message = AudioSendMessage(
-    #         original_content_url=audio_url,
-    #         duration=audio_durations
-    #     )
+        elif matched_command == "#wordapprox":
+            result = similarity.similarity(content, engine='wordapprox', model='food', return_json=True) # model = personname, royin, food
+            send_message(event, str(result))
 
-    # #13. return audio message response
-    # send_audio_message(event,audio_message)  
+        elif matched_command == "#textclean":
+            result = text_cleansing.clean(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#tagsuggest":
+            result = tag.analyze(content, numtag=5)
+            send_message(event, str(result))
+        
+        elif matched_command == "#mtch2th":
+            result = zh2th.translate(content, return_json=True)
+            send_message(event, result)
 
+        elif matched_command == "#mtth2ch":
+            result = th2zh.translate(content, return_json=True)
+            send_message(event, result)
 
+        elif matched_command == "#mten2th":
+            result = en2th.translate(content)
+            send_message(event, result)
 
+        elif matched_command == "#mtth2en":
+            result = th2en.translate(content)
+            send_message(event, result)
+
+        elif matched_command == "#ssense":
+            result = sentiment.analyze(content, engine='ssense')
+            send_message(event, str(result))
+        
+        elif matched_command == "#emonews":
+            result = sentiment.analyze(content, engine='emonews')
+            send_message(event, str(result))
+        
+        elif matched_command == "#thaimoji":
+            result = sentiment.analyze(content, engine='thaimoji')
+            send_message(event, str(result))
+        
+        elif matched_command == "#cyberbully":
+            result = sentiment.analyze(content, engine='cyberbully')
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_sentence":
+            result = sentence_tokenizer.tokenize(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_tagger":
+            result = tagger.tag(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_tokentag":
+            result = token_tagger.tokenize_tag(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_tokenizer":
+            result = logan_tokenizer.tokenize(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#en2th_aligner":
+            # # ตัวอย่างภาษาอังกฤษ-ไทย เช่น "I like to recommend my friends to Thai restaurants|ฉันชอบแนะนำเพื่อนไปร้านอาหารไทย"
+            contents = content.split('|') # รับข้อความจาก Line ในรูปแบบคู่ภาษาที่ต้องการจับคู่ ด้วยเครื่องหมาย "|"
+            result = en_alignment.analyze(contents[0], contents[1], return_json=True)
+            send_message(event, str(result))
+
+        elif matched_command == "#ch2th_aligner":
+            # # ตัวอย่างภาษาจีน-ไทย เช่น "我是10月10日从泰国来的。|ฉันมาจากประเทศไทยเมื่อวันที่ 10 เดือนตุลาคม"
+            contents = content.split('|') # รับข้อความจาก Line ในรูปแบบคู่ภาษาที่ต้องการจับคู่ ด้วยเครื่องหมาย "|"
+            result = zh_alignment.analyze(contents[0], contents[1], return_json=True)
+            send_message(event, str(result))
+        
+        
+        elif matched_command == "#tts":
+            speaker = 0
+            response = callVaja9(content, speaker)
+            if response.json()['msg'] == 'success':
+                download_and_play(response.json()['wav_url'])
+                audio_url = cfg.WAV_URL + cfg.DIR_FILE + cfg.WAV_FILE
+                duration_ms = int(response.json()['durations'] * 1000)
+                audio_message = AudioSendMessage(
+                    original_content_url=audio_url,
+                    duration=duration_ms
+                )
+                send_audio_message(event, audio_message)
+            else:
+                send_message(event, "TTS failed")
+    else:
+        # echo(event)
+        send_message(event, "Service not found")
+     
 def echo(event):
     line_bot_api.reply_message(
         event.reply_token, TextSendMessage(text=event.message.text)
@@ -272,5 +283,8 @@ def callPartii(file):
     response = requests.request("POST", url, headers=headers, files=files, data=param)
     data = json.loads(response.text)
     return data['message']
+
+
+
 
 # End of  file
