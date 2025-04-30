@@ -7,7 +7,6 @@ class Configs(BaseSettings):
     LINE_CHANNEL_SECRET: str
 
     # Basic NLP VARIABLES
-    URL: str
     WAV_URL: str
     WAV_FILE: str
     DIR_FILE: str
