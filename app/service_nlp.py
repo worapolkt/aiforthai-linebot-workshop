@@ -3,14 +3,9 @@ from fastapi import APIRouter, Request
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage, AudioSendMessage,AudioMessage
-
 from aift import setting
 from aift.multimodal import textqa
-
-from datetime import datetime
-
 from app.configs import Configs
-
 from datetime import datetime
 
 # AIForThai import
@@ -83,7 +78,7 @@ def handle_text_message(event):
         "#trexplus","#lexto", "#trex++", "#tner","#g2p", "#soundex","#thaiwordsim", "#wordapprox", 
         "#textclean", "#tagsuggest", "#mtch2th", "#mtth2ch", "#mten2th", "#mtth2en", "#ssense", "#emonews",
         "#thaimoji", "#cyberbully", "#longan_sentence", "#longan_tagger", "#longan_tokentag", "#longan_tokenizer",
-        "#en2th_aligner", "#ch2th_aligner","#tts"
+        "#en2th_aligner", "#ch2th_aligner","#tts","#textsum"
     ]
 
     matched_command = None
@@ -100,7 +95,7 @@ def handle_text_message(event):
             send_message(event, str(result))
 
         elif matched_command == "#lexto":
-            result = tokenizer.tokenize(content, engine='trexplus', return_json=True)
+            result = tokenizer.tokenize(content, engine='lexto', return_json=True)
             send_message(event, str(result))
         
         elif matched_command == "#trex++":
@@ -115,6 +110,10 @@ def handle_text_message(event):
             result = g2p.analyze(content)['output']['result']
             send_message(event, str(result))
         
+        elif matched_command == "#textsum":
+            result = callTextSummarization(content)
+            send_message(event, str(result))
+
         elif matched_command == "#soundex":
             matched = re.match(r"#soundex(?:_([a-zA-Z0-9]+))?(.*)", user_input)
             if matched:
@@ -150,23 +149,23 @@ def handle_text_message(event):
             send_message(event, str(result))
         
         elif matched_command == "#mtch2th":
-            # result = zh2th.translate(content, return_json=True)
-            result = Chainess2Thai(content, "zh", "th")
+            result = zh2th.translate(content, return_json=True)
+            # result = Chainess2Thai(content, "zh", "th")
             send_message(event, str(result))
 
         elif matched_command == "#mtth2ch":
-            # result = th2zh.translate(content, return_json=True)
-            result = Chainess2Thai(content, "th", "zh")
+            result = th2zh.translate(content, return_json=True)
+            # result = Chainess2Thai(content, "th", "zh")
             send_message(event, str(result))
 
         elif matched_command == "#mten2th":
-            # result = en2th.translate(content)
-            result = translate_xiaofan(content, "en2th")
+            result = en2th.translate(content)
+            # result = translate_xiaofan(content, "en2th")
             send_message(event, str(result))
 
         elif matched_command == "#mtth2en":
-            # result = th2en.translate(content)
-            result = translate_xiaofan(content, "th2en")
+            result = th2en.translate(content)
+            # result = translate_xiaofan(content, "th2en")
             send_message(event, str(result))
 
         elif matched_command == "#ssense":
@@ -212,10 +211,9 @@ def handle_text_message(event):
             contents = content.split('|') # รับข้อความจาก Line ในรูปแบบคู่ภาษาที่ต้องการจับคู่ ด้วยเครื่องหมาย "|"
             result = zh_alignment.analyze(contents[0], contents[1], return_json=True)
             send_message(event, str(result))
-        
-        
+          
         elif matched_command == "#tts":
-            speaker = 0
+            speaker = 1
             response = callVaja9(content, speaker)
             if response.json()['msg'] == 'success':
                 download_and_play(response.json()['wav_url'])
@@ -336,5 +334,18 @@ def translate_xiaofan(text, direction):
 
     response = requests.post(url, headers=headers, data=payload)
     return response.json()['translated_text']  # or response.text if you prefer raw
+
+# Function call Text summarization
+def callTextSummarization(content):
+    url ='https://api.aiforthai.in.th/textsummarize'
+
+    headers = {'Apikey':cfg.AIFORTHAI_APIKEY, 'Content-Type':'application/json'}
+
+    params = json.dumps([{"id":100,"comp_rate":30,"src":content}])
+    response = requests.post(url, data=params, headers=headers)
+    txt = response.text
+    text_sum = bytes(txt, "utf-8").decode("unicode_escape")
+
+    return text_sum
 
 # End of  file
