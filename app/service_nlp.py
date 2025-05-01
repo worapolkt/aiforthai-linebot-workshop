@@ -3,7 +3,6 @@ from fastapi import APIRouter, Request
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage, AudioSendMessage,AudioMessage
-
 from aift import setting
 from aift.multimodal import textqa
 from app.configs import Configs
