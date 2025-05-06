@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles  # For Vaja9
 from app import (
     service_main,  # main service router
     service_nlp,  # NLP service router
+    service_image,# image service router
 )
 
 app = FastAPI(
@@ -26,6 +27,7 @@ app.add_middleware(
 
 app.include_router(service_main.router)
 app.include_router(service_nlp.router)
+app.include_router(service_image.router)
 
 # Save static files at the /static endpoint
 if not os.path.exists("static"):

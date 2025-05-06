@@ -22,7 +22,7 @@ from app.configs import Configs
 
 import requests
 
-router = APIRouter(tags=["Main"], prefix="/message")
+router = APIRouter(tags=["Main"], prefix="/image")
 
 cfg = Configs()
 
