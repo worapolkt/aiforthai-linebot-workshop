@@ -220,7 +220,7 @@ def handle_text_message(event):
             if response.json()['msg'] == 'success':
                 download_and_play(response.json()['wav_url'])
                 audio_url = cfg.WAV_URL + cfg.DIR_FILE + cfg.WAV_FILE
-                # print(f'URL: {audio_url}') ## Check URL send to Line
+                # print(f'URL: {audio_url}') ## Check URL send to Line API
                 duration_ms = int(response.json()['durations'] * 1000)
                 audio_message = AudioSendMessage(
                     original_content_url=audio_url,
