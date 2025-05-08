@@ -214,11 +214,13 @@ def handle_text_message(event):
             send_message(event, str(result))
           
         elif matched_command == "#tts":
-            speaker = 1
+            speaker = 0
             response = callVaja9(content, speaker)
+            # print(response.text)
             if response.json()['msg'] == 'success':
                 download_and_play(response.json()['wav_url'])
                 audio_url = cfg.WAV_URL + cfg.DIR_FILE + cfg.WAV_FILE
+                # print(f'URL: {audio_url}')
                 duration_ms = int(response.json()['durations'] * 1000)
                 audio_message = AudioSendMessage(
                     original_content_url=audio_url,
