@@ -25,6 +25,7 @@ from aift.nlp import sentiment # 8. Sentiment analysis
 from aift.nlp.alignment import en_alignment # 9.1. English-Thai Word Aligner
 from aift.nlp.alignment import zh_alignment # 9.2. Chinese-Thai Word Aligner
 from aift.speech import tts
+from aift.speech.stt import partii4, partii5
 
 # For Partii STT
 import io
@@ -66,8 +67,13 @@ def handle_voice_message(event):
     with open("received_audio.wav", "wb") as f:
         for chunk in message_content.iter_content():
             f.write(chunk)
-        
+
+    # Call ParTii function  
     text = callPartii("received_audio.wav")
+
+    # Call partii4 or partii5 in Python package
+    # result  = partii4.transcribe('received_audio.wav', return_json=True)
+    # text = result['message']
     send_message(event,str(text))
 
 
@@ -286,14 +292,11 @@ def download_and_play(sWav_url):
     file_name = cfg.DIR_FILE+cfg.WAV_FILE
     with open(file_name, 'wb') as a:
         resp = requests.get(sWav_url,headers={'Apikey':cfg.AIFORTHAI_APIKEY})
-        # print(resp.status_code)
         if resp.status_code == 200:
             a.write(resp.content)
-            #   print('Downloaded: '+sWav_url)
         else:
             print(resp.reason)
             exit(1)
-    # return file_name
     
 def get_wav_duration_in_ms(file_path):
     with wave.open(file_path, 'r') as wav_file:
@@ -308,14 +311,12 @@ def callPartii(file):
 
     files = {'wavfile': (file, open(file, 'rb'), 'audio/wav')}
 
-    headers = {
-            'Apikey': cfg.AIFORTHAI_APIKEY,
+    headers = {'Apikey': cfg.AIFORTHAI_APIKEY,
             'Cache-Control': 'no-cache',
             'Connection': 'keep-alive',
             }
 
     param = {"outputlevel":"--uttlevel","outputformat":"--txt"}
-
     response = requests.request("POST", url, headers=headers, files=files, data=param)
     data = json.loads(response.text)
     return data['message']
