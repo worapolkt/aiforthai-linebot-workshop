@@ -11,6 +11,7 @@ from datetime import datetime
 # AIForThai import
 from aift.nlp import tokenizer # 1. Tokenizer
 from aift.nlp import ner # 1.1 TNER
+from aift.nlp.longan import sentence_tokenizer, tagger, token_tagger, tokenizer as logan_tokenizer # 1.2. Longan
 from aift.nlp import g2p # 2. G2P
 from aift.nlp import soundex # 3. Soundex
 from aift.nlp import similarity # 4. Word similarity
@@ -21,7 +22,6 @@ from aift.nlp.translation import th2zh # 7.2. Thai to Chinese
 from aift.nlp.translation import en2th # 7.3. English to Thai
 from aift.nlp.translation import th2en # 7.4. Thai to English
 from aift.nlp import sentiment # 8. Sentiment analysis
-from aift.nlp.longan import sentence_tokenizer, tagger, token_tagger, tokenizer as logan_tokenizer # 9. Longan
 from aift.nlp.alignment import en_alignment # 10.1. English-Thai Word Aligner
 from aift.nlp.alignment import zh_alignment # 10.2. Chinese-Thai Word Aligner
 from aift.speech import tts
@@ -78,7 +78,7 @@ def handle_text_message(event):
         "#trexplus","#lexto", "#trex++", "#tner","#g2p", "#soundex","#thaiwordsim", "#wordapprox", 
         "#textclean", "#tagsuggest", "#mtch2th", "#mtth2ch", "#mten2th", "#mtth2en", "#ssense", "#emonews",
         "#thaimoji", "#cyberbully", "#longan_sentence", "#longan_tagger", "#longan_tokentag", "#longan_tokenizer",
-        "#en2th_aligner", "#ch2th_aligner","#tts","#textsum"
+        "#en2th_aligner", "#ch2th_aligner","#tts", "#vajatts","#textsum"
     ]
 
     matched_command = None
@@ -106,6 +106,22 @@ def handle_text_message(event):
             result = ner.analyze(content, return_json=True)
             send_message(event, str(list(zip(result['words'], result['POS'], result['tags']))))
         
+        elif matched_command == "#longan_sentence":
+            result = sentence_tokenizer.tokenize(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_tagger":
+            result = tagger.tag(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_tokentag":
+            result = token_tagger.tokenize_tag(content)
+            send_message(event, str(result))
+        
+        elif matched_command == "#longan_tokenizer":
+            result = logan_tokenizer.tokenize(content)
+            send_message(event, str(result))
+        
         elif matched_command == "#g2p":
             result = g2p.analyze(content)['output']['result']
             send_message(event, str(result))
@@ -118,7 +134,8 @@ def handle_text_message(event):
         elif matched_command == "#soundex":
             matched = re.match(r"#soundex(?:_([a-zA-Z0-9]+))?(.*)", user_input)
             if matched:
-                model = matched.group(1) if matched.group(1) else "personname"  # Default model, model = personname, royin
+                # Default model, model = personname, royin
+                model = matched.group(1) if matched.group(1) else "personname"  
                 content = matched.group(2).strip()
 
                 result = soundex.analyze(content, model=model)['words']
@@ -127,6 +144,7 @@ def handle_text_message(event):
         elif matched_command.startswith("#thaiwordsim"):
             matched = re.match(r"#thaiwordsim(?:_([a-zA-Z0-9]+))?(.*)", user_input)
             if matched:
+                # default to thwiki,  model = thwiki, twitter
                 model = matched.group(1) if matched.group(1) else "thwiki"
                 content = matched.group(2).strip()
                 result = similarity.similarity(content, engine='thaiwordsim', model=model)
@@ -135,7 +153,8 @@ def handle_text_message(event):
         elif matched_command == "#wordapprox":
             matched = re.match(r"#wordapprox(?:_([a-zA-Z0-9]+))?(.*)", user_input)
             if matched:
-                model = matched.group(1) if matched.group(1) else "personname"  # default to personname,  model = personname, royin, food
+                # default to personname,  model = personname, royin, food
+                model = matched.group(1) if matched.group(1) else "personname"  
                 content = matched.group(2).strip()
 
                 result = similarity.similarity(content, engine='wordapprox', model=model, return_json=True)
@@ -184,23 +203,7 @@ def handle_text_message(event):
         elif matched_command == "#cyberbully":
             result = sentiment.analyze(content, engine='cyberbully')
             send_message(event, str(result))
-        
-        elif matched_command == "#longan_sentence":
-            result = sentence_tokenizer.tokenize(content)
-            send_message(event, str(result))
-        
-        elif matched_command == "#longan_tagger":
-            result = tagger.tag(content)
-            send_message(event, str(result))
-        
-        elif matched_command == "#longan_tokentag":
-            result = token_tagger.tokenize_tag(content)
-            send_message(event, str(result))
-        
-        elif matched_command == "#longan_tokenizer":
-            result = logan_tokenizer.tokenize(content)
-            send_message(event, str(result))
-        
+                
         elif matched_command == "#en2th_aligner":
             # # ตัวอย่างภาษาอังกฤษ-ไทย เช่น "I like to recommend my friends to Thai restaurants|ฉันชอบแนะนำเพื่อนไปร้านอาหารไทย"
             contents = content.split('|') # รับข้อความจาก Line ในรูปแบบคู่ภาษาที่ต้องการจับคู่ ด้วยเครื่องหมาย "|"
@@ -212,6 +215,19 @@ def handle_text_message(event):
             contents = content.split('|') # รับข้อความจาก Line ในรูปแบบคู่ภาษาที่ต้องการจับคู่ ด้วยเครื่องหมาย "|"
             result = zh_alignment.analyze(contents[0], contents[1], return_json=True)
             send_message(event, str(result))
+        
+        elif matched_command == "#vajatts":
+            speaker = 0 #[0=เสียงผู้ชาย, 1=เสียงผู้หญิง, 2=เด็กผู้ชาย, 3=เด็กผู้หญิง]
+            tts.convert(event.message.text, cfg.DIR_FILE+cfg.WAV_FILE, speaker=speaker) 
+
+            audio_url = cfg.WAV_URL+cfg.DIR_FILE+cfg.WAV_FILE
+            audio_duration = get_wav_duration_in_ms(cfg.DIR_FILE+cfg.WAV_FILE)
+
+            audio_message = AudioSendMessage(
+                    original_content_url=audio_url,
+                    duration=audio_duration
+                )
+            send_audio_message(event, audio_message)   
           
         elif matched_command == "#tts":
             speaker = 0
