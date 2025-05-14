@@ -22,8 +22,8 @@ from aift.nlp.translation import th2zh # 7.2. Thai to Chinese
 from aift.nlp.translation import en2th # 7.3. English to Thai
 from aift.nlp.translation import th2en # 7.4. Thai to English
 from aift.nlp import sentiment # 8. Sentiment analysis
-from aift.nlp.alignment import en_alignment # 10.1. English-Thai Word Aligner
-from aift.nlp.alignment import zh_alignment # 10.2. Chinese-Thai Word Aligner
+from aift.nlp.alignment import en_alignment # 9.1. English-Thai Word Aligner
+from aift.nlp.alignment import zh_alignment # 9.2. Chinese-Thai Word Aligner
 from aift.speech import tts
 
 # For Partii STT
