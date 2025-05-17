@@ -46,7 +46,18 @@ handler = WebhookHandler(cfg.LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
 
 
 @router.post("")
-async def message_qa(request: Request):
+async def nlp_demo(request: Request):
+    """
+    Line Webhook endpoint สำหรับรับข้อความจาก Line Messaging API และประมวลผลข้อความด้วย AI FOR THAI
+
+    ฟังก์ชันนี้ทำหน้าที่:
+    1. รับ HTTP POST Request จาก Line Webhook
+    2. ตรวจสอบลายเซ็น (X-Line-Signature) เพื่อยืนยันความถูกต้องของข้อความ
+    3. ส่งข้อความไปยัง handler เพื่อประมวลผลอีเวนต์ที่ได้รับ
+    4. รองรับการประมวลผลข้อความ (TextMessage) และเสียง (AudioMessage):
+        - สำหรับข้อความ (TextMessage): ตรวจจับคำสั่ง NLP และเรียกใช้ฟังก์ชันที่เกี่ยวข้อง เช่น Tokenizer, Translation, Sentiment Analysis เป็นต้น
+        - สำหรับเสียง (AudioMessage): แปลงเสียงเป็นข้อความด้วย AI FOR THAI Speech-to-Text (Partii) และส่งข้อความตอบกลับไปยังผู้ใช้
+    """
     signature = request.headers["X-Line-Signature"]
     body = await request.body()
     try:

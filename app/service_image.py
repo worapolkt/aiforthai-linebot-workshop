@@ -22,7 +22,7 @@ from app.configs import Configs
 
 import requests
 
-router = APIRouter(tags=["Main"], prefix="/image")
+router = APIRouter(tags=["Image"], prefix="/image")
 
 cfg = Configs()
 
@@ -34,7 +34,18 @@ handler = WebhookHandler(cfg.LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
 user_messages                   = {}
 
 @router.post("")
-async def message_qa(request: Request):
+async def image_demo(request: Request):
+    """
+    Line Webhook endpoint สำหรับรับข้อความและรูปภาพจาก Line Messaging API และประมวลผลด้วย AI FOR THAI
+
+    ฟังก์ชันนี้ทำหน้าที่:
+    1. รับ HTTP POST Request จาก Line Webhook
+    2. ตรวจสอบลายเซ็น (X-Line-Signature) เพื่อยืนยันความถูกต้องของข้อความ
+    3. ส่งข้อความไปยัง handler เพื่อประมวลผลอีเวนต์ที่ได้รับ
+    4. รองรับการประมวลผลข้อความ (TextMessage) และรูปภาพ (ImageMessage):
+        - สำหรับข้อความ (TextMessage): ใช้ข้อความเพื่อเลือกโมเดล AI เช่น Face Blur, Chest X-Ray Classification, NSFW Detection เป็นต้น
+        - สำหรับรูปภาพ (ImageMessage): ประมวลผลรูปภาพด้วยโมเดล AI ที่เลือกไว้ และส่งผลลัพธ์กลับไปยังผู้ใช้
+    """
     signature = request.headers["X-Line-Signature"]
     body = await request.body()
     try:
