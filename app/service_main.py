@@ -22,6 +22,18 @@ handler = WebhookHandler(cfg.LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
 
 @router.post("")
 async def multimodal_demo(request: Request):
+    """
+    Line Webhook endpoint สำหรับรับข้อความจาก Line Messaging API และประมวลผลข้อความด้วย AI FOR THAI
+
+    ฟังก์ชันนี้ทำหน้าที่:
+    1. รับ HTTP POST Request จาก Line Webhook
+    2. ตรวจสอบลายเซ็น (X-Line-Signature) เพื่อยืนยันความถูกต้องของข้อความ
+    3. ส่งข้อความไปยัง handler เพื่อประมวลผลอีเวนต์ที่ได้รับ
+    4. เมื่อได้รับข้อความ (MessageEvent) ที่เป็นข้อความ (TextMessage):
+        - สร้าง session id โดยใช้วัน, เดือน, ชั่วโมง, และนาทีที่ปรับให้ลงตัวกับเลข 10
+        - ส่งข้อความไปยัง API Text QA ของ AI FOR THAI (ซึ่งใช้ Pathumma LLM) เพื่อประมวลผล
+        - ส่งข้อความตอบกลับ (response) กลับไปยังผู้ใช้ผ่าน Line Messaging API
+    """
     signature = request.headers["X-Line-Signature"]
     body = await request.body()
     try:
