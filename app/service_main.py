@@ -21,7 +21,7 @@ handler = WebhookHandler(cfg.LINE_CHANNEL_SECRET)  # CHANNEL_SECRET
 
 
 @router.post("")
-async def message_qa(request: Request):
+async def multimodal_demo(request: Request):
     signature = request.headers["X-Line-Signature"]
     body = await request.body()
     try:
